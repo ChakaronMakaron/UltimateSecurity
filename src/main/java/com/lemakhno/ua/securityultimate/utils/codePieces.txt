@@ -1,0 +1,42 @@
+// String requestServletPath = request.getServletPath();
+
+// If we are LOGGING IN or getting REFRESH TOKEN
+// if (requestServletPath.equals(SecurityConstants.LOGIN_URL) || requestServletPath.equals(SecurityConstants.REFRESH_TOKEN_URL)) {
+//     filterChain.doFilter(request, response);
+//     return;
+// } else {
+
+//     String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+//     if (authorizationHeader != null && authorizationHeader.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+
+//         try {
+
+//             String accessToken = authorizationHeader.substring(SecurityConstants.TOKEN_PREFIX.length());
+
+//             JWTVerifier verifier = JWT.require(SecurityConstants.ALGORITHM).build();
+
+//             DecodedJWT decodedJWT = verifier.verify(accessToken);
+
+//             String username = decodedJWT.getSubject();
+//             String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+
+//             Collection<SimpleGrantedAuthority> authorities = JwtUtil.rolesArrayToAuthoritiesCollection(roles);
+
+//             UsernamePasswordAuthenticationToken authentication =
+//                             new UsernamePasswordAuthenticationToken(username, null, authorities);
+
+//             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+//             filterChain.doFilter(request, response);
+            
+//         } catch (JWTVerificationException e) {
+//             response.setStatus(403);
+//             response.addHeader("Token-Verification-Status", "TOKEN IS NOT VALID");
+//             System.out.println(">>>>>>>>>>>>>> TOKEN IS NOT VALID OR EXPIRED OR WTF");
+//         } catch (Exception e) {}
+
+//     } else {
+//         filterChain.doFilter(request, response);
+//     }
+// }
