@@ -49,17 +49,7 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
         // If authorization header is missing or malformed
         if (authorizationHeader == null || !authorizationHeader.startsWith(SecurityConstants.TOKEN_PREFIX)) {
             System.out.println(">>> NO AUTHORIZATION HEADER OR WRONG PREFIX");
-            // filterChain.doFilter(request, response);
-
-            Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("status", HttpStatus.UNAUTHORIZED.value());
-            responseBody.put("message", ResponseMessage.NO_AUTHENTICATION_PROVIDED.toString());
-
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-            objectMapper.writeValue(response.getOutputStream(), responseBody);
-
+            filterChain.doFilter(request, response);
             return;
         }
 
