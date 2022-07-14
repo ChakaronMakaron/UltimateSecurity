@@ -1,6 +1,7 @@
 package com.lemakhno.ua.securityultimate.security.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -31,39 +32,39 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     Logger logger = Logger.getLogger(this.getClass().getName());
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     {
         setFilterProcessesUrl(SecurityConstants.LOGIN_URL);
     }
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
     public AppAuthenticationFilter(AuthenticationManager authenticationManager) {
+        super.setAuthenticationManager(authenticationManager);
         this.authenticationManager = authenticationManager;
     }
 
-    @Override
-    @Autowired
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        super.setAuthenticationManager(authenticationManager);
-    }
+    // @Override
+    // @Autowired
+    // public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+    //     super.setAuthenticationManager(authenticationManager);
+    // }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
         
-        try {
+        System.out.println(">>> ATTEMPTING AUTH");
 
-            AuthenticationRequest authenticationRequest = objectMapper.readValue(request.getInputStream(), AuthenticationRequest.class);
+        try (InputStream requestInputStream = request.getInputStream()) {
+
+            AuthenticationRequest authenticationRequest = objectMapper.readValue(requestInputStream, AuthenticationRequest.class);
 
             String username = authenticationRequest.getUsername();
             String password = authenticationRequest.getPassword();
-
-            logger.info("####################");
-            logger.info(">>> Attempting Authentication of |" + username + "| pass |" + password + "|");
-            logger.info("####################");
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
 
@@ -81,9 +82,7 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         
         User user = (User) authentication.getPrincipal();
 
-        logger.info("####################");
         logger.info(">>>" + " Successful authentication, roles: " + user.getAuthorities());
-        logger.info("####################");
 
         String accessToken = JwtUtil.generateToken(user);
 

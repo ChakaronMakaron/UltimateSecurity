@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
@@ -35,7 +37,8 @@ import com.lemakhno.ua.securityultimate.service.UserService;
 @RequestMapping("/api")
 public class RefreshTokenController {
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    ObjectMapper objectMapper;
     
     @Autowired
     private UserService userService;
@@ -58,7 +61,6 @@ public class RefreshTokenController {
 
     @PostMapping("/user/newRole")
     public String addNewRoleToUser(String mock) {
-        // TODO addNewRoleToUser
         return "OK";
     }
     
@@ -86,13 +88,13 @@ public class RefreshTokenController {
             try {
 
                 String accessToken = authorizationHeader.substring(SecurityConstants.TOKEN_PREFIX.length());
+                
+                JWTVerifier verifier = JWT.require(SecurityConstants.ALGORITHM).build();
 
-                DecodedJWT decodedJWT = JwtUtil.getDecodedJwt(accessToken); // <- Throws Runtime JWTVerificationException
+                DecodedJWT decodedJWT = verifier.verify(accessToken); // <- Throws Runtime JWTVerificationException
 
                 String username = decodedJWT.getSubject();
-                String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
-
-                List<String> rolesAsList = JwtUtil.rolesArrayToRolesList(roles);
+                List<String> rolesAsList = decodedJWT.getClaim("roles").asList(String.class);
 
                 String newAccessToken = JwtUtil.generateToken(username, rolesAsList);
 
@@ -128,8 +130,7 @@ public class RefreshTokenController {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     
                 objectMapper.writeValue(response.getOutputStream(), responseBody);
-
-            } catch (Exception e) {}
+            }
     }
 
 }

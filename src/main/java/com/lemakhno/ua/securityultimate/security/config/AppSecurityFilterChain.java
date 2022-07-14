@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class AppSecurityFilterChain {
@@ -39,9 +38,9 @@ public class AppSecurityFilterChain {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         httpSecurity
-        .addFilterBefore(appAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(appAuthorizationFilter, AppAuthenticationFilter.class) // Or UsernamePasswordAuthenticationFilter
         .addFilter(appAuthenticationFilter);
-        
+
         return httpSecurity.build();
     }
 }
