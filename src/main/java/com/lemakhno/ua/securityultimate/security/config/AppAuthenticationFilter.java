@@ -38,14 +38,15 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Autowired
     private ObjectMapper objectMapper;
 
-    {
-        setFilterProcessesUrl(SecurityConstants.LOGIN_URL);
-    }
-
     public AppAuthenticationFilter(AuthenticationManager authenticationManager) {
-        super.setAuthenticationManager(authenticationManager);
+        setFilterProcessesUrl(SecurityConstants.LOGIN_URL);
+        setAuthenticationManager(authenticationManager);
         this.authenticationManager = authenticationManager;
     }
+
+    // {
+    //     setFilterProcessesUrl(SecurityConstants.LOGIN_URL);
+    // }
 
     // @Override
     // @Autowired
